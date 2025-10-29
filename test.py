@@ -3,12 +3,16 @@ import os
 import pandas as pd
 import shutil
 
+
+dataset = "lakshmi25npathi/imdb-dataset-of-50k-movie-reviews" 
+dataset_name = dataset.split("/")[-1]
+
 # ดาวน์โหลด dataset
-path = kagglehub.dataset_download("mohamedasak/imdb-top-250-movies")
+path = kagglehub.dataset_download(dataset)
 print("Path ที่โหลดมา:", path)
 
 # ย้ายไปยัง path ที่ต้องการ
-target_path = "mydatasets/imdb_top250"
+target_path = "mydatasets/" + dataset_name
 os.makedirs(target_path, exist_ok=True)
 shutil.copytree(path, target_path, dirs_exist_ok=True)
 print("ย้าย dataset ไปที่:", target_path)
