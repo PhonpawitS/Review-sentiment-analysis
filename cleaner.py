@@ -12,7 +12,7 @@ column = "review"
 
 
 
-reviews = pd.read_csv(file_path , usecols=[column], nrows=10)
+reviews = pd.read_csv(file_path , usecols=[column])
 
 def clean_text(text):
     text = text.lower()
