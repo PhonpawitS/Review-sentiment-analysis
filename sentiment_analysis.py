@@ -3,6 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score, classification_report
+from sklearn.linear_model import LogisticRegression
 
 # สมมติว่าไฟล์ CSV ของคุณมี 2 คอลัมน์: 'review_text' และ 'sentiment'
 # 1. โหลดข้อมูล
@@ -25,7 +26,8 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 # 4. แปลงข้อความเป็นตัวเลข (Vectorization)
 # เราจะใช้ TF-IDF
-vectorizer = TfidfVectorizer(max_features=5000) # จำกัดที่ 5000 คำที่พบบ่อยสุด
+# เพิ่ม ngram_range=(1, 2) เพื่อให้มองทั้งคำเดี่ยว (1) และคำคู่ (2)
+vectorizer = TfidfVectorizer(max_features=5000, ngram_range=(1, 2)) # จำกัดที่ 5000 คำที่พบบ่อยสุด
 
 # "เรียนรู้" คำศัพท์จากข้อมูล Train
 X_train_tfidf = vectorizer.fit_transform(X_train)
@@ -34,8 +36,10 @@ X_train_tfidf = vectorizer.fit_transform(X_train)
 X_test_tfidf = vectorizer.transform(X_test)
 
 # 5. เลือกและ Train โมเดล (ใช้ Naive Bayes)
-model = MultinomialNB()
+# model = MultinomialNB()
+model = LogisticRegression(max_iter=1000)
 model.fit(X_train_tfidf, y_train)
+
 
 print("Model training completed.")
 
@@ -49,14 +53,14 @@ print(classification_report(y_test, y_pred, target_names=['Negative', 'Positive'
 # --- ต่อจากโค้ดเดิม ---
 
 # 7. ทดสอบโมเดลกับข้อความใหม่
-print("\n--- ทดสอบโมเดล (Test with new reviews) ---")
+print("\n--- Model Test ---")
 
 # สร้างรีวิวตัวอย่าง
 new_reviews = [
-    "This movie was fantastic, I really loved it!", # (Positive)
-    "What a waste of time, the plot was terrible.",  # (Negative)
-    "It was an okay movie, not bad but not great either.", # (อาจจะทายยาก)
-    "I enjoyed the acting so much." # (Positive)
+    "Fuck you movie.", # (Positive)
+    "Movie is very good but i don't like it.",  # (Negative)
+    "I want to wacth my granma instead of this movie", # (อาจจะทายยาก)
+    "I love titanic." # (Positive)
 ]
 
 # 1. ต้องแปลงข้อความใหม่ด้วย vectorizer *ตัวเดิม* ที่เรา Train ไว้
@@ -68,4 +72,4 @@ predictions = model.predict(new_reviews_tfidf)
 # 3. แสดงผลลัพธ์ (1 คือ 'positive', 0 คือ 'negative' ที่เราตั้งไว้)
 for text, pred in zip(new_reviews, predictions):
     label = 'Positive' if pred == 1 else 'Negative'
-    print(f"'{text}' \n   => ทำนายว่าเป็น: {label}\n")
+    print(f"'{text}' \n   => Predict Answer: {label}\n")
