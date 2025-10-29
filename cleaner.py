@@ -10,7 +10,7 @@ nltk.download('stopwords')
 file_path = "mydatasets\imdb-dataset-of-50k-movie-reviews\IMDB Dataset.csv"
 column = "review"
 
-reviews = pd.read_csv(file_path, nrows=1000)
+reviews = pd.read_csv(file_path)
 
 def clean_text(text):
     text = text.lower()
