@@ -10,9 +10,7 @@ nltk.download('stopwords')
 file_path = "mydatasets\imdb-dataset-of-50k-movie-reviews\IMDB Dataset.csv"
 column = "review"
 
-
-
-reviews = pd.read_csv(file_path , usecols=[column], nrows=10)
+reviews = pd.read_csv(file_path, nrows=1000)
 
 def clean_text(text):
     text = text.lower()
@@ -28,7 +26,7 @@ reviews['cleaned_' + column] = reviews[column].apply(clean_text)
 
 relative_path = file_path.split("mydatasets\\")[-1]
 
-cleaned_df = reviews[['cleaned_' + column]]
+cleaned_df = reviews[['cleaned_' + column , "sentiment"]]
 output_path = "mycleandatasets\\" + relative_path
 os.makedirs(os.path.dirname(output_path), exist_ok=True)
 cleaned_df.to_csv(output_path, index=False)

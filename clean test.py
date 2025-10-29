@@ -1,3 +1,5 @@
+import os
+import pandas as pd
 import re
 import nltk
 from nltk.corpus import stopwords
@@ -16,6 +18,7 @@ def clean_text(text):
     # ลบ stopwords
     words = [w for w in words if w not in stopwords.words('english')]
     # ทำ stemming
+    stemmer = PorterStemmer()
     words = [stemmer.stem(w) for w in words]
     return ' '.join(words)
 
