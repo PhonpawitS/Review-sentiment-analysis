@@ -14,10 +14,10 @@ except FileNotFoundError:
 
 # 2. แปลง Label (ถ้ายังไม่ได้ทำ)
 # สมมติ 'sentiment' เป็น "Positive" และ "Negative"
-data['sentiment_label'] = data['sentiment'].map({'Positive': 1, 'Negative': 0})
+data['sentiment_label'] = data['sentiment'].map({'positive': 1, 'negative': 0})
 
 # 3. แบ่งข้อมูล Train/Test (แบ่งข้อมูล Text และ Label)
-X = data['review_text']
+X = data['cleaned_review']
 y = data['sentiment_label']
 
 # แบ่งข้อมูล 80% เป็น Train, 20% เป็น Test
@@ -37,11 +37,35 @@ X_test_tfidf = vectorizer.transform(X_test)
 model = MultinomialNB()
 model.fit(X_train_tfidf, y_train)
 
-print("โมเดล Train เสร็จสิ้น!")
+print("Model training completed.")
 
 # 6. ประเมินผล
 y_pred = model.predict(X_test_tfidf)
 
-print(f"ความแม่นยำ (Accuracy): {accuracy_score(y_test, y_pred) * 100:.2f}%")
+print(f"Accuracy: {accuracy_score(y_test, y_pred) * 100:.2f}%")
 print("\n--- Classification Report ---")
 print(classification_report(y_test, y_pred, target_names=['Negative', 'Positive']))
+
+# --- ต่อจากโค้ดเดิม ---
+
+# 7. ทดสอบโมเดลกับข้อความใหม่
+print("\n--- ทดสอบโมเดล (Test with new reviews) ---")
+
+# สร้างรีวิวตัวอย่าง
+new_reviews = [
+    "This movie was fantastic, I really loved it!", # (Positive)
+    "What a waste of time, the plot was terrible.",  # (Negative)
+    "It was an okay movie, not bad but not great either.", # (อาจจะทายยาก)
+    "I enjoyed the acting so much." # (Positive)
+]
+
+# 1. ต้องแปลงข้อความใหม่ด้วย vectorizer *ตัวเดิม* ที่เรา Train ไว้
+new_reviews_tfidf = vectorizer.transform(new_reviews)
+
+# 2. สั่งให้โมเดลทำนาย
+predictions = model.predict(new_reviews_tfidf)
+
+# 3. แสดงผลลัพธ์ (1 คือ 'positive', 0 คือ 'negative' ที่เราตั้งไว้)
+for text, pred in zip(new_reviews, predictions):
+    label = 'Positive' if pred == 1 else 'Negative'
+    print(f"'{text}' \n   => ทำนายว่าเป็น: {label}\n")
